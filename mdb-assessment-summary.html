@@ -41,7 +41,7 @@
       }
 
        :host mdb-radio-list.mode-selection paper-radio-button,
-       :host mdb-radio-list.landscape-search-by paper-radio-button,
+       :host .modifier .radio-list paper-radio-button,
        :host mdb-radio-list.lob-process-search-selection paper-radio-button {
         text-align: center;
         position: absolute;
@@ -66,13 +66,13 @@
       }
 
        :host mdb-radio-list.mode-selection paper-radio-button:nth-child(2),
-       :host mdb-radio-list.landscape-search-by paper-radio-button:nth-child(2),
+       :host .modifier .radio-list paper-radio-button:nth-child(2),
        :host mdb-radio-list.lob-process-search-selection paper-radio-button:nth-child(2) {
         left: 33.33%;
       }
 
        :host mdb-radio-list.mode-selection paper-radio-button:nth-child(3),
-       :host mdb-radio-list.landscape-search-by paper-radio-button:nth-child(3),
+       :host .modifier .radio-list paper-radio-button:nth-child(3),
        :host mdb-radio-list.lob-process-search-selection paper-radio-button:nth-child(3) {
         left: 66.66%;
       }
@@ -93,10 +93,6 @@
         left: 50%;
       }
 
-       :host mdb-radio-list.landscape-search-by {
-        margin-top: 3em;
-      }
-
        :host .physical-entity mdb-radio-list {
         margin-top: 3em;
       }
@@ -113,10 +109,22 @@
         margin-top: 4em;
       }
 
-       :host h2.accuracy {
+       :host .modifier .message {
         text-align: center;
         font-size: 2em;
         font-weight: 400;
+      }
+
+       :host[mode="landscape"] .modifier .message {
+        margin-top: 2em;
+      }
+
+       :host[mode="landscape"] .modifier .radio-list {
+        margin-top: 2em;
+      }
+
+       :host[mode="landscape"] .modifier .radio-list {
+        margin-top: 3em;
       }
     </style>
     <div class="assessment-summary">
@@ -129,13 +137,6 @@
         <paper-radio-button name="lobprocess">LOB/ Process</paper-radio-button>
       </mdb-radio-list>
     </div>
-    <template is="dom-if" if='[[_isMode(mode,"landscape")]]'>
-      <mdb-radio-list class="landscape-search-by" selected="{{landscapeSearchBy}}">
-        <paper-radio-button name="scanned">Scanned</paper-radio-button>
-        <paper-radio-button name="humanverified">Human Verified</paper-radio-button>
-        <paper-radio-button name="regcertified">Reg. Certified</paper-radio-button>
-      </mdb-radio-list>
-    </template>
     <template is="dom-if" if='[[_isMode(mode,"physicalentity")]]'>
       <div class="physical-entity">
         <mdb-radio-list selected="{{physicalEntitySearchBy}}">
@@ -145,7 +146,6 @@
           <paper-radio-button name="table">Table</paper-radio-button>
         </mdb-radio-list>
         <mdb-search-box placeholder="Search by [[physicalEntitySearchBy]]" filter="{{physicalEntitySearchParam}}"></mdb-search-box>
-        <h2 class="accuracy">Average Accuracy</h2>
       </div>
     </template>
     <template is="dom-if" if='[[_isMode(mode,"lobprocess")]]'>
@@ -155,13 +155,20 @@
           <paper-radio-button name="process">Process</paper-radio-button>
         </mdb-radio-list>
         <mdb-search-box placeholder="Search by [[lobProcessSearchBy]]"></mdb-search-box>
-        <mdb-radio-list class="lob-process-search-selection" selected="{{lobProcessSearchParam}}">
+      </div>
+    </template>
+    <div class="modifier">
+      <template is="dom-if" if='[[!showMessage]]'>
+        <mdb-radio-list class="radio-list" selected="{{landscapeSearchBy}}">
           <paper-radio-button name="scanned">Scanned</paper-radio-button>
           <paper-radio-button name="humanverified">Human Verified</paper-radio-button>
           <paper-radio-button name="regcertified">Reg. Certified</paper-radio-button>
         </mdb-radio-list>
-      </div>
-    </template>
+      </template>
+      <template is="dom-if" if='[[showMessage]]'>
+        <h2 class="message">[[message]]</h2>
+      </template>
+    </div>
   </template>
 
   <script>
@@ -208,6 +215,13 @@
           reflectToAttribute: true,
           notify: true
         },
+
+        showMessage: {
+          type: Boolean,
+          value: false
+        },
+
+        message: String
       },
 
       _isMode: function (current, check) {
