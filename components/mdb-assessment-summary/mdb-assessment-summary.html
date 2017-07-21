@@ -26,7 +26,7 @@ Custom property | Description | Default
         border: 1px solid var(--mdb-border-color, #000);
         width: 25em;
         vertical-align: top;
-        height: 32em;
+        height: 31em;
         color: var(--mdb-primary-text-dark, #000);
         --mdb-radio-list-container: {
           width: 23.6em;
@@ -60,7 +60,6 @@ Custom property | Description | Default
        :host .lob-process-selection paper-radio-button {
         text-align: center;
         width: 50%;
-        font-size: 0.9em;
       }
 
        :host paper-radio-button:nth-child(1) {
@@ -100,14 +99,13 @@ Custom property | Description | Default
       }
 
        :host mdb-search-box {
+        margin-top: 1em;
+        position: relative;
+        top: -0.7em;
         --mdb-search-box-container: {
           margin-left: 0;
           margin-right: 0;
         }
-      }
-
-       :host mdb-search-box {
-        margin-top: 1em;
       }
 
        :host .modifier .message {
@@ -116,8 +114,9 @@ Custom property | Description | Default
         font-weight: 400;
       }
 
-       :host[mode="landscape"] .modifier .message {
-        margin-top: 2em;
+       :host:not([mode="landscape"]) .modifier {
+        position: relative;
+        top: -1em;
       }
     </style>
     <div class="assessment-summary">
