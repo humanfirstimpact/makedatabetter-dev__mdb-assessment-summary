@@ -13,12 +13,12 @@
     "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.0"
   },
   "homepage": "https://github.com/makedatabetter-dev/mdb-radio-list",
-  "version": "0.1.2",
-  "_release": "0.1.2",
+  "version": "0.1.4",
+  "_release": "0.1.4",
   "_resolution": {
     "type": "version",
-    "tag": "v0.1.2",
-    "commit": "ca934eb36176155b8c38fb58a9c47efbeafa50f6"
+    "tag": "v0.1.4",
+    "commit": "afebce3b486fc351b737bb8d8786b1dc5267860b"
   },
   "_source": "git://github.com/makedatabetter-dev/mdb-radio-list.git",
   "_target": "*",

@@ -14,11 +14,11 @@
     "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.0"
   },
   "homepage": "https://github.com/makedatabetter-dev/mdb-assessment-summary",
-  "_release": "37c4a03d7d",
+  "_release": "6c3e8303ac",
   "_resolution": {
     "type": "branch",
     "branch": "master",
-    "commit": "37c4a03d7d70a3d936d2846ab9675e378106590a"
+    "commit": "6c3e8303acbbcfbceeffeb3bc6440281b652b5c4"
   },
   "_source": "https://github.com/makedatabetter-dev/mdb-assessment-summary.git",
   "_target": "master",
