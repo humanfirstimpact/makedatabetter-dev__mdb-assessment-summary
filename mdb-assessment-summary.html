@@ -21,111 +21,71 @@ Custom property | Description | Default
 <dom-module id="mdb-assessment-summary">
   <template>
     <style>
-       :host {
-        display: inline-block;
-        padding: var(--standard-padding, 20px);
+      :host {
+        @apply(--layout-vertical);
+        color: var(--mdb-secondary-text-dark, #000);
+        width: 252px;
+        min-width: 272px;
+        height: 310px;
+        padding-bottom: 40px;
         border: 1px solid var(--mdb-border-color, #000);
-        width: 25em;
-        vertical-align: top;
-        height: 31em;
-        color: var(--mdb-primary-text-dark, #000);
+        position: relative;
         --mdb-radio-list-container: {
-          width: 23.6em;
+          margin-top: 1em;
+          @apply(--layout-horizontal);
+        }
+        --mdb-radio-list-button: {
+          @apply(--layout-horizontal);
+          @apply(--layout-center-justified);
+          @apply(--layout-flex);
+          text-align: center;
+          align-items: center;
         }
         --stat-value: {
           font-size: 6em;
+          color: var(--app-primary-color);
         }
         @apply(--paper-font-common-base);
       }
 
-       :host mdb-metric-display {
+      :host paper-radio-button:not([aria-checked="true"]):first-child {
+        border-left: 0;
+      }
+
+      :host paper-radio-button:not([aria-checked="true"]):last-child {
+        border-right: 0;
+      }
+
+      :host mdb-metric-display {
         border: 0;
+        height: 150px;
       }
 
-       :host paper-radio-button {
-        padding-left: 0;
-        padding-right: 0;
-      }
-
-       :host mdb-radio-list.mode-selection paper-radio-button,
-       :host .modifier .radio-list paper-radio-button,
-       :host mdb-radio-list.lob-process-search-selection paper-radio-button {
-        text-align: center;
-        width: 33.33%;
-      }
-
-       :host .physical-entity paper-radio-button {
-        text-align: center;
-        width: 25%;
-      }
-
-       :host .lob-process-selection paper-radio-button {
-        text-align: center;
-        width: 50%;
-      }
-
-       :host paper-radio-button:nth-child(1) {
-        left: 0;
-      }
-
-       :host mdb-radio-list.mode-selection paper-radio-button:nth-child(2),
-       :host .modifier .radio-list paper-radio-button:nth-child(2),
-       :host mdb-radio-list.lob-process-search-selection paper-radio-button:nth-child(2) {
-        left: 33.33%;
-      }
-
-       :host mdb-radio-list.mode-selection paper-radio-button:nth-child(3),
-       :host .modifier .radio-list paper-radio-button:nth-child(3),
-       :host mdb-radio-list.lob-process-search-selection paper-radio-button:nth-child(3) {
-        left: 66.66%;
-      }
-
-       :host .physical-entity mdb-radio-list paper-radio-button:nth-child(2) {
-        left: 25%;
-      }
-
-       :host .physical-entity mdb-radio-list paper-radio-button:nth-child(3) {
-        left: 50%;
-      }
-
-       :host .physical-entity mdb-radio-list paper-radio-button:nth-child(4) {
-        left: 75%;
-      }
-
-       :host .lob-process-selection paper-radio-button:nth-child(2) {
-        left: 50%;
-      }
-
-       :host mdb-radio-list {
-        margin-top: 1em;
-      }
-
-       :host mdb-search-box {
-        margin-top: 1em;
-        position: relative;
-        top: -0.7em;
+      :host mdb-search-box {
         --mdb-search-box-container: {
-          margin-left: 0;
-          margin-right: 0;
+          margin: 1em
         }
       }
 
-       :host .modifier .message {
-        text-align: center;
-        font-size: 2em;
-        font-weight: 400;
+      :host .footer {
+        position: absolute;
+        bottom: -1px;
+        left: 0;
+        right: 0;
       }
 
-       :host:not([mode="landscape"]) .modifier {
-        position: relative;
-        top: -1em;
+      :host .modifier .message {
+        text-align: center;
+        font-size: 1.5em;
+        font-weight: normal;
+        margin-bottom: 5px;
       }
     </style>
     <div class="assessment-summary">
       <mdb-metric-display-container>
         <mdb-metric-display stat-value="[[assessmentStat]]"></mdb-metric-display>
       </mdb-metric-display-container>
-      <mdb-radio-list class="mode-selection" selected="{{mode}}">
+      <mdb-radio-list size="small" class="mode-selection" selected="{{mode}}">
         <paper-radio-button name="landscape">Landscape</paper-radio-button>
         <paper-radio-button name="physicalentity">Physical Entity</paper-radio-button>
         <paper-radio-button name="lobprocess">LOB/ Process</paper-radio-button>
@@ -133,7 +93,7 @@ Custom property | Description | Default
     </div>
     <template is="dom-if" if='[[_isMode(mode,"physicalentity")]]'>
       <div class="physical-entity">
-        <mdb-radio-list selected="{{physicalEntitySearchBy}}">
+        <mdb-radio-list size="small" selected="{{physicalEntitySearchBy}}">
           <paper-radio-button name="application">Application</paper-radio-button>
           <paper-radio-button name="database">Database</paper-radio-button>
           <paper-radio-button name="schema">Schema</paper-radio-button>
@@ -144,16 +104,16 @@ Custom property | Description | Default
     </template>
     <template is="dom-if" if='[[_isMode(mode,"lobprocess")]]'>
       <div class="lob-process">
-        <mdb-radio-list class="lob-process-selection" selected="{{lobProcessSearchBy}}">
+        <mdb-radio-list size="small" class="lob-process-selection" selected="{{lobProcessSearchBy}}">
           <paper-radio-button name="lob">LOB</paper-radio-button>
           <paper-radio-button name="process">Process</paper-radio-button>
         </mdb-radio-list>
         <mdb-search-box placeholder="Search by [[lobProcessSearchBy]]"></mdb-search-box>
       </div>
     </template>
-    <div class="modifier">
+    <div class="modifier footer">
       <template is="dom-if" if='[[!showMessage]]'>
-        <mdb-radio-list class="radio-list" selected="{{landscapeSearchBy}}">
+        <mdb-radio-list size="small" class="footer-radio-list" selected="{{landscapeSearchBy}}">
           <paper-radio-button name="scanned">Scanned</paper-radio-button>
           <paper-radio-button name="humanverified">Human Verified</paper-radio-button>
           <paper-radio-button name="regcertified">Reg. Certified</paper-radio-button>
