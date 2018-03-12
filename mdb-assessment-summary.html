@@ -24,12 +24,11 @@ Custom property | Description | Default
       :host {
         @apply(--layout-vertical);
         color: var(--mdb-secondary-text-dark, #000);
-        width: 252px;
-        min-width: 272px;
-        height: 310px;
-        padding-bottom: 40px;
+        min-width: 250px;
+        padding: 10px;
         border: 1px solid var(--mdb-border-color, #000);
         position: relative;
+        text-transform: uppercase;
         --mdb-radio-list-container: {
           margin-top: 1em;
           @apply(--layout-horizontal);
@@ -37,7 +36,9 @@ Custom property | Description | Default
         --mdb-radio-list-button: {
           @apply(--layout-horizontal);
           @apply(--layout-center-justified);
-          @apply(--layout-flex);
+          -ms-flex: 1 1 0;
+          -webkit-flex: 1 1 0;
+          flex: 1 1 0;
           text-align: center;
           align-items: center;
         }
@@ -45,16 +46,22 @@ Custom property | Description | Default
           font-size: 6em;
           color: var(--app-primary-color);
         }
+        --paper-item: {
+          padding: 5px;
+          font-size: 12px;
+          font-weight: normal;
+          color: var(--mdb-primary-text-dark);
+        }
+        --paper-item-selected: {
+          font-weight: normal;
+        }
+        --paper-item-focused: {
+          font-weight: normal;
+        }
+
         @apply(--paper-font-common-base);
       }
 
-      :host paper-radio-button:not([aria-checked="true"]):first-child {
-        border-left: 0;
-      }
-
-      :host paper-radio-button:not([aria-checked="true"]):last-child {
-        border-right: 0;
-      }
 
       :host mdb-metric-display {
         border: 0;
@@ -63,15 +70,8 @@ Custom property | Description | Default
 
       :host mdb-search-box {
         --mdb-search-box-container: {
-          margin: 1em
+          margin: 1em 0;
         }
-      }
-
-      :host .footer {
-        position: absolute;
-        bottom: -1px;
-        left: 0;
-        right: 0;
       }
 
       :host .modifier .message {
@@ -81,47 +81,90 @@ Custom property | Description | Default
         text-transform: uppercase;
         margin-bottom: 10px;
       }
+
+      paper-radio-button {
+        padding-left: 2px;
+        padding-right: 2px;
+        text-align: center;
+      }
+
+      .menu-holder {
+        position: relative;
+      }
+
+      paper-menu {
+        position: absolute;
+        top: 0;
+        left: 0;
+        max-height: 100px;
+        background: white;
+        overflow: auto;
+        z-index: 2;
+        margin: 0;
+        padding: 0;
+        width: auto;
+        box-shadow: 0px 0px 3px 0px #333;
+        cursor: pointer;
+      }
+
+      :host .hier {
+        color: var(--mdb-secondary-text-dark);
+        white-space: nowrap;
+      }
     </style>
     <div class="assessment-summary">
       <mdb-metric-display-container>
-        <mdb-metric-display stat-value="[[assessmentStat]]"></mdb-metric-display>
+        <mdb-metric-display stat-value="[[stats]]"></mdb-metric-display>
       </mdb-metric-display-container>
       <mdb-radio-list size="small" class="mode-selection" selected="{{mode}}">
-        <paper-radio-button name="landscape">Landscape</paper-radio-button>
+        <paper-radio-button name="landscape" disabled>Landscape</paper-radio-button>
         <paper-radio-button name="physicalentity">Physical Entity</paper-radio-button>
         <paper-radio-button name="lobprocess">LOB/ Process</paper-radio-button>
       </mdb-radio-list>
     </div>
-    <template is="dom-if" if='[[_isMode(mode,"physicalentity")]]'>
-      <div class="physical-entity">
+    <iron-pages selected="{{mode}}" attr-for-selected="name">
+      <div name="physicalentity" class="physical-entity">
         <mdb-radio-list size="small" selected="{{physicalEntitySearchBy}}">
-          <paper-radio-button name="application">Application</paper-radio-button>
+          <paper-radio-button name="application">App</paper-radio-button>
           <paper-radio-button name="database">Database</paper-radio-button>
           <paper-radio-button name="schema">Schema</paper-radio-button>
           <paper-radio-button name="table">Table</paper-radio-button>
         </mdb-radio-list>
-        <mdb-search-box placeholder="Search by [[physicalEntitySearchBy]]" filter="{{physicalEntitySearchParam}}"></mdb-search-box>
+        <mdb-search-box show-search-Controls placeholder="Search by [[physicalEntitySearchBy]]" filter="{{filteredValue}}"></mdb-search-box>
       </div>
-    </template>
-    <template is="dom-if" if='[[_isMode(mode,"lobprocess")]]'>
-      <div class="lob-process">
+
+      <div name="lobprocess" class="lob-process">
         <mdb-radio-list size="small" class="lob-process-selection" selected="{{lobProcessSearchBy}}">
           <paper-radio-button name="lob">LOB</paper-radio-button>
           <paper-radio-button name="process">Process</paper-radio-button>
         </mdb-radio-list>
-        <mdb-search-box placeholder="Search by [[lobProcessSearchBy]]"></mdb-search-box>
+        <mdb-search-box show-search-Controls placeholder="Search by [[lobProcessSearchBy]]" filter="{{filteredValue}}"></mdb-search-box>
       </div>
-    </template>
+    </iron-pages>
+    <div class="menu-holder">
+      <paper-menu selected="{{selectedAutocomplete}}" on-selected-changed="_autoCompleteSelected">
+        <template is="dom-repeat" items='[[autoCompleteData]]'>
+          <paper-item>
+            <div class="item-container">
+              <div class="hier">
+                [[_getHierarchyText(item)]]
+              </div>
+              <div>[[item.label]]</div>
+            </div>
+          </paper-item>
+        </template>
+      </paper-menu>
+    </div>
     <div class="modifier footer">
-      <template is="dom-if" if='[[!showMessage]]'>
+      <template is="dom-if" if='[[!averageAccuracy]]'>
         <mdb-radio-list size="small" class="footer-radio-list" selected="{{landscapeSearchBy}}">
           <paper-radio-button name="scanned">Scanned</paper-radio-button>
-          <paper-radio-button name="humanverified">Human Verified</paper-radio-button>
-          <paper-radio-button name="regcertified">Reg. Certified</paper-radio-button>
+          <paper-radio-button name="humanVerified">Human Verified</paper-radio-button>
+          <paper-radio-button name="regCertified">Reg. Certified</paper-radio-button>
         </mdb-radio-list>
       </template>
-      <template is="dom-if" if='[[showMessage]]'>
-        <h2 class="message">[[message]]</h2>
+      <template is="dom-if" if='[[averageAccuracy]]'>
+        <h2 class="message">Average Accuracy</h2>
       </template>
     </div>
   </template>
@@ -139,22 +182,22 @@ Custom property | Description | Default
 
         mode: {
           type: String,
-          value: 'landscape',
-          reflectToAttribute: true
+          value: 'physicalentity',
+          observer: '_modeChanged'
         },
 
         landscapeSearchBy: {
           type: String,
           value: 'scanned',
           reflectToAttribute: true,
-          notify: true
+          notify: true,
+          observer: '_landscapeSearchByChanged'
         },
 
         physicalEntitySearchBy: {
           type: String,
           value: 'application',
-          reflectToAttribute: true,
-          notify: true
+          observer: '_physicalEntitySearchByChanged'
         },
 
         lobProcessSearchBy: {
@@ -170,19 +213,141 @@ Custom property | Description | Default
           reflectToAttribute: true,
           notify: true
         },
-
-        showMessage: {
+        averageAccuracy: {
           type: Boolean,
           value: false
         },
-
-        message: String
+        filteredValue: {
+          type: String,
+          value: '',
+          observer: '_clearAllStats'
+        }
       },
-
+      listeners: {
+        'search-term-pressed': '_searchForItem',
+        'search-term-entered': '_searchForItem'
+      },
       _isMode: function (current, check) {
         return current === check;
-      }
+      },
+      _clearAllStats: function () {
+        if (this.filteredValue.length == 0) {
+          this._closeAutoComplete();
+        }
+      },
+      _modeChanged: function () {
+        this._closeAutoComplete();
+      },
+      _landscapeSearchByChanged: function () {
+        this.stats = this.selectedStats ? !this.averageAccuracy ? this.selectedStats[this.landscapeSearchBy].toFixed(2) : this.selectedStats['avgAccuracy'].toFixed(2) : 0;
+        this._closeAutoComplete();
+      },
+      _physicalEntitySearchByChanged: function () {
+        this.filteredValue = '';
+        this._closeAutoComplete();
+      },
+      _closeAutoComplete: function () {
+        this.autoCompleteData = null;
+      },
+      _searchForItem: function (params) {
+        if (!params.detail.searchTerm) {
+          this._closeAutoComplete();
+          return;
+        }
+        var term = params.detail.searchTerm;
+        var searchLocation = this.mode == 'physicalentity' ? this.physicalEntitySearchBy : this.lobProcessSearchBy;
 
+        var searchArray = this.data[searchLocation];
+
+        var filteredData = searchArray.filter(function (item) {
+          return item.label.toLowerCase().indexOf(term.toLowerCase()) >= 0;
+        });
+        this.autoCompleteData = filteredData;
+      },
+      _getHierarchyText: function (data) {
+        var text = '';
+        var apis = ['lob', 'process', 'concept', 'application', 'schema', 'table'];
+        var count = 0;
+        for (var item of apis) {
+          if (data[item]) {
+            text = count == 0 ? data[item]['label'] : text + ' > ' + data[item]['label'];
+            count++;
+          }
+        }
+        return text;
+      },
+      _autoCompleteSelected: function (item) {
+        if (this.selectedAutocomplete == undefined) {
+          return;
+        }
+        var selectedItem = this.autoCompleteData[this.selectedAutocomplete];
+        this.filteredValue = selectedItem['label'];
+        var searchLocation = this.mode == 'physicalentity' ? this.physicalEntitySearchBy : this.lobProcessSearchBy;
+
+        var statusPromise;
+        switch (searchLocation.toLowerCase()) {
+          case 'application':
+            statusPromise = this._getApplicationAssessmentStatus(selectedItem)
+            break;
+          case 'database':
+            statusPromise = this._getDatabaseAssessmentStatus(selectedItem)
+            break;
+          case 'schema':
+            statusPromise = this._getSchemaAssessmentStatus(selectedItem)
+            break;
+          case 'table':
+            statusPromise = this._getTableAssessmentStatus(selectedItem)
+            break;
+          default:
+            break;
+        }
+        var comp = this;
+        statusPromise.then(function (stats) {
+          comp.selectedStats = stats;
+          comp._landscapeSearchByChanged();
+
+        }).catch(function (error) {
+          console.log(error);
+        })
+
+      },
+      _getApplicationAssessmentStatus: function (args) {
+        return this.dataProvider.getApplicationAssessmentStatus({
+          lob: args.lob,
+          concept: args.concept,
+          application: args
+        })
+      },
+
+      _getDatabaseAssessmentStatus: function (args) {
+        return this.dataProvider.getDatabaseAssessmentStatus({
+          lob: args.lob,
+          concept: args.concept,
+          application: args.application,
+          database: args
+        })
+      },
+
+      _getSchemaAssessmentStatus: function (args) {
+        return this.dataProvider.getSchemaAssessmentStatus({
+          lob: args.lob,
+          concept: args.concept,
+          application: args.application,
+          database: args.database,
+          schema: args
+        })
+      },
+
+      _getTableAssessmentStatus: function (args) {
+        return this.dataProvider.getTableAssessmentStatus({
+          lob: args.lob,
+          concept: args.concept,
+          application: args.application,
+          database: args.database,
+          schema: args.schema,
+          table: args
+        })
+      },
     });
   </script>
 </dom-module>
