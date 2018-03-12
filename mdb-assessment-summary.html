@@ -4,6 +4,7 @@
 <link rel="import" href="../paper-radio-button/paper-radio-button.html">
 <link rel="import" href="../mdb-search-box/mdb-search-box.html">
 <link rel="import" href="../paper-styles/typography.html">
+<link rel="import" href="../paper-listbox/paper-listbox.html">
 
 <!--
 `mdb-assessment-summary`
@@ -70,7 +71,7 @@ Custom property | Description | Default
 
       :host mdb-search-box {
         --mdb-search-box-container: {
-          margin: 1em 0;
+          margin: 1.5em 0 1em 0;
         }
       }
 
@@ -92,11 +93,11 @@ Custom property | Description | Default
         position: relative;
       }
 
-      paper-menu {
+      paper-listbox {
         position: absolute;
         top: 0;
         left: 0;
-        max-height: 100px;
+        max-height: 200px;
         background: white;
         overflow: auto;
         z-index: 2;
@@ -114,7 +115,7 @@ Custom property | Description | Default
     </style>
     <div class="assessment-summary">
       <mdb-metric-display-container>
-        <mdb-metric-display stat-value="[[stats]]"></mdb-metric-display>
+        <mdb-metric-display stat-value="[[stats]]%"></mdb-metric-display>
       </mdb-metric-display-container>
       <mdb-radio-list size="small" class="mode-selection" selected="{{mode}}">
         <paper-radio-button name="landscape" disabled>Landscape</paper-radio-button>
@@ -142,7 +143,7 @@ Custom property | Description | Default
       </div>
     </iron-pages>
     <div class="menu-holder">
-      <paper-menu selected="{{selectedAutocomplete}}" on-selected-changed="_autoCompleteSelected">
+      <paper-listbox selected="{{selectedAutocomplete}}" on-selected-changed="_autoCompleteSelected">
         <template is="dom-repeat" items='[[autoCompleteData]]'>
           <paper-item>
             <div class="item-container">
@@ -153,7 +154,7 @@ Custom property | Description | Default
             </div>
           </paper-item>
         </template>
-      </paper-menu>
+      </paper-listbox>
     </div>
     <div class="modifier footer">
       <template is="dom-if" if='[[!averageAccuracy]]'>
@@ -175,10 +176,6 @@ Custom property | Description | Default
       is: 'mdb-assessment-summary',
 
       properties: {
-        assessmentStat: {
-          type: String,
-          value: ''
-        },
 
         mode: {
           type: String,
@@ -239,7 +236,7 @@ Custom property | Description | Default
         this._closeAutoComplete();
       },
       _landscapeSearchByChanged: function () {
-        this.stats = this.selectedStats ? !this.averageAccuracy ? this.selectedStats[this.landscapeSearchBy].toFixed(2) : this.selectedStats['avgAccuracy'].toFixed(2) : 0;
+        this.stats = this.selectedStats ? !this.averageAccuracy ? this.selectedStats[this.landscapeSearchBy].toFixed(2) : this.selectedStats['avgAccuracy'].toFixed(2) : '0.00';
         this._closeAutoComplete();
       },
       _physicalEntitySearchByChanged: function () {
@@ -263,6 +260,7 @@ Custom property | Description | Default
           return item.label.toLowerCase().indexOf(term.toLowerCase()) >= 0;
         });
         this.autoCompleteData = filteredData;
+        this.$$('paper-listbox').selectIndex(-1);
       },
       _getHierarchyText: function (data) {
         var text = '';
@@ -277,10 +275,10 @@ Custom property | Description | Default
         return text;
       },
       _autoCompleteSelected: function (item) {
-        if (this.selectedAutocomplete == undefined) {
+        if (!this.autoCompleteData || item.detail.value == undefined || item.detail.value == '-1') {
           return;
         }
-        var selectedItem = this.autoCompleteData[this.selectedAutocomplete];
+        var selectedItem = this.autoCompleteData[item.detail.value];
         this.filteredValue = selectedItem['label'];
         var searchLocation = this.mode == 'physicalentity' ? this.physicalEntitySearchBy : this.lobProcessSearchBy;
 
@@ -298,6 +296,12 @@ Custom property | Description | Default
           case 'table':
             statusPromise = this._getTableAssessmentStatus(selectedItem)
             break;
+          case 'lob':
+            statusPromise = this._getLobAssessmentStatus(selectedItem)
+            break;
+          case 'process':
+            statusPromise = this._getProcessAssessmentStatus(selectedItem)
+            break;
           default:
             break;
         }
@@ -310,6 +314,17 @@ Custom property | Description | Default
           console.log(error);
         })
 
+      },
+      _getLobAssessmentStatus: function (args) {
+        return this.dataProvider.getLobAssessmentStatus({
+          lob: args
+        })
+      },
+      _getProcessAssessmentStatus: function (args) {
+        return this.dataProvider.getProcessAssessmentStatus({
+          lob: args.lob,
+          process: args
+        })
       },
       _getApplicationAssessmentStatus: function (args) {
         return this.dataProvider.getApplicationAssessmentStatus({
