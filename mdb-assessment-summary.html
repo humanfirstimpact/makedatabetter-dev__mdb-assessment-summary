@@ -218,7 +218,8 @@ Custom property | Description | Default
           type: String,
           value: '',
           observer: '_clearAllStats'
-        }
+        },
+        stats: Number
       },
       listeners: {
         'search-term-pressed': '_searchForItem',
@@ -233,15 +234,16 @@ Custom property | Description | Default
         }
       },
       _modeChanged: function () {
-        this._closeAutoComplete();
+        this.filteredValue = '';
+        this.stats = 0;
       },
       _landscapeSearchByChanged: function () {
-        this.stats = this.selectedStats ? !this.averageAccuracy ? this.selectedStats[this.landscapeSearchBy].toFixed(2) : this.selectedStats['avgAccuracy'].toFixed(2) : '0.00';
+        this.stats = this.selectedStats ? !this.averageAccuracy ? this._getStatValue(this.selectedStats[this.landscapeSearchBy].toFixed(2)) : this._getStatValue(this.selectedStats['avgAccuracy'].toFixed(2)) : '0';
         this._closeAutoComplete();
       },
       _physicalEntitySearchByChanged: function () {
         this.filteredValue = '';
-        this._closeAutoComplete();
+        this.stats = 0;
       },
       _closeAutoComplete: function () {
         this.autoCompleteData = null;
@@ -261,6 +263,9 @@ Custom property | Description | Default
         });
         this.autoCompleteData = filteredData;
         this.$$('paper-listbox').selectIndex(-1);
+      },
+      _getStatValue: function (params) {
+        return parseFloat(params).toString();
       },
       _getHierarchyText: function (data) {
         var text = '';
