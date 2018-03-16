@@ -251,6 +251,7 @@ Custom property | Description | Default
       _searchForItem: function (params) {
         if (!params.detail.searchTerm) {
           this._closeAutoComplete();
+          this.stats = 0;
           return;
         }
         var term = params.detail.searchTerm;
