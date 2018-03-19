@@ -31,7 +31,7 @@ Custom property | Description | Default
         position: relative;
         text-transform: uppercase;
         --mdb-radio-list-container: {
-          margin-top: 1em;
+          margin-top: 1.7em;
           @apply(--layout-horizontal);
         }
         --mdb-radio-list-button: {
@@ -71,7 +71,7 @@ Custom property | Description | Default
 
       :host mdb-search-box {
         --mdb-search-box-container: {
-          margin: 1.5em 0 1em 0;
+          margin: 1em 0 0;
         }
       }
 
@@ -200,8 +200,7 @@ Custom property | Description | Default
         lobProcessSearchBy: {
           type: String,
           value: 'lob',
-          reflectToAttribute: true,
-          notify: true
+          observer: '_lobProcessSearchByChanged'
         },
 
         lobProcessSearchParam: {
@@ -232,6 +231,10 @@ Custom property | Description | Default
         if (this.filteredValue.length == 0) {
           this._closeAutoComplete();
         }
+      },
+      _lobProcessSearchByChanged: function(){
+        this.filteredValue = '';
+        this.stats = 0;
       },
       _modeChanged: function () {
         this.filteredValue = '';
