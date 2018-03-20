@@ -118,12 +118,21 @@ Custom property | Description | Default
         <mdb-metric-display stat-value="[[stats]]%"></mdb-metric-display>
       </mdb-metric-display-container>
       <mdb-radio-list size="small" class="mode-selection" selected="{{mode}}">
-        <paper-radio-button name="landscape" disabled>Landscape</paper-radio-button>
+        <paper-radio-button name="landscape">Landscape</paper-radio-button>
         <paper-radio-button name="physicalentity">Physical Entity</paper-radio-button>
         <paper-radio-button name="lobprocess">LOB/ Process</paper-radio-button>
       </mdb-radio-list>
     </div>
     <iron-pages selected="{{mode}}" attr-for-selected="name">
+      <div name="landscape" style="visibility: hidden">
+        <mdb-radio-list size="small" selected="{{physicalEntitySearchBy}}">
+          <paper-radio-button name="application">App</paper-radio-button>
+          <paper-radio-button name="database">Database</paper-radio-button>
+          <paper-radio-button name="schema">Schema</paper-radio-button>
+          <paper-radio-button name="table">Table</paper-radio-button>
+        </mdb-radio-list>
+        <mdb-search-box show-search-Controls placeholder="Search by [[physicalEntitySearchBy]]" filter="{{filteredValue}}"></mdb-search-box>
+      </div>
       <div name="physicalentity" class="physical-entity">
         <mdb-radio-list size="small" selected="{{physicalEntitySearchBy}}">
           <paper-radio-button name="application">App</paper-radio-button>
